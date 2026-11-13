@@ -1,27 +1,85 @@
 # MyMusik MCP
 
-Use an MCP client to search the music you own in a running MyMusik app. The connector runs on your computer and connects to the app on localhost or your private network. You choose the permissions and session duration in MyMusik.
+Ask Claude, Codex or another MCP client to find an album in your own music collection, queue a playlist or organize tracks. The connector runs on the computer that runs your MCP client. It talks to your open MyMusik app on the same computer or over your private network. You choose what it can do and when its access expires.
+
+**Get MyMusik** · [Windows on the Microsoft Store](https://apps.microsoft.com/detail/9PHH0491K006) · [Android on Google Play](https://play.google.com/store/apps/details?id=com.shaggai.mymusik) · [Linux AppImage](https://mymusik.app/en/download/) · [MyMusik website](https://mymusik.app/)
+
+**Get the connector** · [Release downloads](https://github.com/shagg-ai/mymusik-mcp/releases/tag/v0.1.0) · [Official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.shagg-ai%2Fmymusik-mcp/versions/latest) · [Pair and find your first albums](#pair-and-find-your-first-albums)
 
 <!-- mcp-name: io.github.shagg-ai/mymusik-mcp -->
 
-Clients that support local MCP bundles can install the release from the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.shagg-ai%2Fmymusik-mcp/versions/latest) or [download the MCPB](https://github.com/shagg-ai/mymusik-mcp/releases/download/v0.1.0/mymusik-mcp.mcpb). Pair with MyMusik before your first library query.
+MyMusik is an offline music player and library manager for the files you own. Import your MP3, FLAC and WAV files, browse by album or artist, and keep separate queues for different listening sessions. Local playback is free and works without an account.
+
+<p>
+  <img src="https://raw.githubusercontent.com/shagg-ai/mymusik-mcp/main/docs/images/windows-albums.webp" width="70%" alt="MyMusik on Windows showing a grid of album covers with the track Moonlit Letters in the player">
+  <img src="https://raw.githubusercontent.com/shagg-ai/mymusik-mcp/main/docs/images/android-queue.png" width="24.6%" alt="MyMusik on Android showing the Evening rotation 3 playback queue">
+</p>
+
+## What you can ask
+
+| Ask your MCP client | Access to choose in MyMusik |
+| --- | --- |
+| “List three albums from my MyMusik library.” | **Read only** |
+| “Which tracks by this artist are already in my library?” | **Read only** |
+| “Play my Road Trip playlist, then skip to the next track.” | **Remote playback** |
+| “Suggest ten songs from my library for a night drive. Show me the list before saving it as a playlist.” | **Read only** for suggestions, **Library editor** to save |
 
 ## Pair and find your first albums
 
-1. Install Python 3.10 or newer. Install the published wheel with `python -m pip install https://github.com/shagg-ai/mymusik-mcp/releases/download/v0.1.0/mymusik_mcp-0.1.0-py3-none-any.whl`. Activate the environment you installed into before running its commands.
-2. Open MyMusik and go to **Insights → Connect a device**. Open the shield, choose **Read only** and a duration, select **Apply**, and copy the agent prompt. Keep MyMusik running.
-3. Run `mymusik-mcp pair`. At the hidden input, paste just the invitation URL containing `#grant=` from the copied prompt and press Enter. Each invitation can be used once.
-4. Add the local connector to your MCP client. Set the executable to `mymusik-mcp` (or its absolute installed path) and the argument to `stdio`. Clients that start the executable with no arguments also use stdio. The Claude and Codex plugins supply their own launch configuration.
-5. Ask **“List three albums from my MyMusik library.”** Compare the names with **Albums** in MyMusik.
+1. Install MyMusik, add some music and keep the app running. If the app is on a different device, put both devices on the same private network and enable **Allow Remote Access** in MyMusik’s web server settings.
+2. On the computer running your MCP client, install Python 3.10 or newer and run the following command. If you use a virtual environment, activate it first.
 
-If the session expires, copy a fresh invitation and run `mymusik-mcp pair` again. Restart or reconnect the MCP server in your client so it loads the renewed session. To pair another instance, supply the same `--profile PATH` to both `pair` and `stdio`. [MyMusik pairing guide](https://mymusik.app/en/music-mcp-server/)
+   ```sh
+   python -m pip install https://github.com/shagg-ai/mymusik-mcp/releases/download/v0.1.0/mymusik_mcp-0.1.0-py3-none-any.whl
+   ```
 
-## Claude and Codex
+3. In MyMusik, open **Insights → Connect a device**. Select the shield, choose **Read only** and a session duration, then **Apply → Copy agent prompt**.
+4. Run the pairing command below. At the hidden input, paste **only the invitation URL containing `#grant=`** from the copied prompt and press Enter. Each invitation works once.
 
-Claude launches its bundled connector using `python`. Codex launches the installed `mymusik-mcp` command from its PATH. With a virtual environment, start Codex from the activated environment. For a desktop launcher, install the wheel with `pipx install mymusik_mcp-0.1.0-py3-none-any.whl` and make the pipx applications directory available on PATH, then restart Codex. Pair under the same operating-system account that runs your client. You can also pair directly from this checkout with `python plugins/mymusik/mymusik_mcp/cli.py pair`.
+   ```sh
+   mymusik-mcp pair
+   ```
 
-For Claude Code, start a local session with `claude --plugin-dir ./plugins/mymusik` from the repository root. For Codex, run `codex plugin marketplace add shagg-ai/mymusik-mcp`, then `codex plugin add mymusik@mymusik-plugins` and start a new local chat.
+5. [Connect your MCP client](#connect-your-mcp-client), then ask **“List three albums from my MyMusik library.”** Open **Albums** in MyMusik to compare the names.
+
+When access expires, copy a fresh invitation, run `mymusik-mcp pair` again and reconnect or restart the server in your client. [Illustrated pairing guide](https://mymusik.app/en/music-mcp-server/)
+
+## Connect your MCP client
+
+**Codex.** With the installed `mymusik-mcp` executable on your PATH, run these commands and start a new local chat.
+
+```sh
+codex plugin marketplace add shagg-ai/mymusik-mcp
+codex plugin add mymusik@mymusik-plugins
+```
+
+**Claude Code.** Clone this repository and start a local session with the bundled plugin. It uses `python` on your PATH and reads the session you paired above.
+
+```sh
+git clone https://github.com/shagg-ai/mymusik-mcp.git
+cd mymusik-mcp
+claude --plugin-dir ./plugins/mymusik
+```
+
+**Other local MCP clients.** If your client accepts MCP bundles, [download the MCPB](https://github.com/shagg-ai/mymusik-mcp/releases/download/v0.1.0/mymusik-mcp.mcpb) and open it in the client. For clients with an `mcpServers` configuration, use this configuration.
+
+```json
+{
+  "mcpServers": {
+    "mymusik": {
+      "command": "mymusik-mcp",
+      "args": ["stdio"]
+    }
+  }
+}
+```
+
+If a desktop client cannot find the command, use the absolute path to the installed executable. For Codex, launch it from the activated environment or install the downloaded wheel with `pipx`, add the pipx applications directory to PATH and restart Codex. The command also defaults to stdio when called without arguments.
 
 ## Permissions and stored data
 
-The connector stores the paired session under `%LOCALAPPDATA%/mymusik-mcp/connection.profile` on Windows, protected with Windows user-scoped DPAPI. On other systems it uses a private file with mode 0600 under `$XDG_CONFIG_HOME/mymusik-mcp` or `~/.config/mymusik-mcp`. Deleting the profile removes the connector's saved session. Keep invitations and profiles private. Tool results go to the MCP client you choose. Library edits and playback depend on the permissions granted in MyMusik.
+Pair under the operating-system account that runs your client. The connector saves the session in `%LOCALAPPDATA%/mymusik-mcp/connection.profile` on Windows using user-scoped DPAPI. On other systems it uses a private file with mode `0600` under `$XDG_CONFIG_HOME/mymusik-mcp` or `~/.config/mymusik-mcp`. Delete the profile to remove the saved session. Keep invitations and profiles private. Your selected MCP client receives the tool results.
+
+To pair a second instance, pass the same `--profile PATH` to both `mymusik-mcp pair` and `mymusik-mcp stdio`. From a source checkout, you can also pair with `python plugins/mymusik/mymusik_mcp/cli.py pair`.
+
+[MIT license](https://github.com/shagg-ai/mymusik-mcp/blob/main/LICENSE) · [Release validation](https://github.com/shagg-ai/mymusik-mcp/blob/main/VALIDATION.md)
