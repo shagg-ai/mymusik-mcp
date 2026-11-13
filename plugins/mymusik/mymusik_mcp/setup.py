@@ -1,6 +1,7 @@
 """Local desktop pairing. Import Tk only when the user opens setup."""
 
 import json
+import math
 import os
 from pathlib import Path
 import queue
@@ -65,6 +66,11 @@ def open_setup(profile_path):
     paper, surface, header = "#f4f1f6", "#ffffff", "#21162e"
     root.configure(bg=paper)
     base = font.nametofont("TkDefaultFont").copy()
+    available = set(font.families(root))
+    for family in ("Roboto", "Segoe UI", "Helvetica Neue"):
+        if family in available:
+            base.configure(family=family)
+            break
     base.configure(size=10)
     title = base.copy()
     title.configure(size=21, weight="bold")
@@ -78,17 +84,48 @@ def open_setup(profile_path):
     gap = max(6, em // 2)
     inset = 3 * gap
 
-    def button_style(name, bg, fg, hover, pressed, border):
-        style.configure(name, background=bg, foreground=fg, font=strong,
-                        padding=(gap * 2, gap), borderwidth=1, relief="flat",
-                        bordercolor=border, lightcolor=bg, darkcolor=bg, focuscolor=fg)
-        style.map(name, background=[("disabled", "#e2dae8"), ("pressed", pressed), ("active", hover)],
-                  foreground=[("disabled", muted)], bordercolor=[("focus", fg)])
+    # A stretchable corner tile rounds the native ttk buttons. Tk still
+    # owns their keyboard, pointer, focus, disabled and accessible button states.
+    radius = max(4, round(em * 0.33))
+    images = []
 
-    button_style("Pair.TButton", accent, "white", "#58229c", "#46197e", accent)
-    button_style("Plain.TButton", surface, ink, "#f0eaf6", "#e3d8ed", "#cfc6d6")
-    button_style("Link.TButton", surface, accent, "#f4eff9", "#e3d8ed", surface)
-    style.configure("Link.TButton", padding=(gap, gap))
+    def corner_tile(fill, outline, background):
+        def rgb(color):
+            return tuple(c // 257 for c in root.winfo_rgb(color))
+
+        inside, edge, outside = map(rgb, (fill, outline, background))
+        size = 2 * radius + 1
+        pixels = bytearray()
+        for y in range(size):
+            for x in range(size):
+                distance = math.hypot(x - radius, y - radius)
+                cover = min(1, max(0, radius + 0.5 - distance))
+                inner = min(1, max(0, radius - 1.5 - distance))
+                pixels.extend(round(a * inner + b * (cover - inner) + c * (1 - cover))
+                              for a, b, c in zip(inside, edge, outside))
+        image = tk.PhotoImage(data=f"P6\n{size} {size}\n255\n".encode() + pixels, format="PPM")
+        images.append(image)
+        return image
+
+    def button_style(name, parent_bg, fill, fg, hover, pressed, outline=None):
+        element = name + ".surface"
+        style.element_create(element, "image", corner_tile(fill, outline or fill, parent_bg),
+                             ("disabled", corner_tile("#e5deea", "#e5deea", parent_bg)),
+                             ("pressed", corner_tile(pressed, accent, parent_bg)),
+                             ("focus", corner_tile(hover, "#48206e" if fg != "white" else "#cca6ff", parent_bg)),
+                             ("active", corner_tile(hover, outline or hover, parent_bg)),
+                             border=radius, padding=0, sticky="nsew")
+        style.layout(name, [(element, {"sticky": "nsew", "children": [
+            ("Button.padding", {"sticky": "nsew", "children": [("Button.label", {"sticky": ""})]})
+        ]})])
+        style.configure(name, foreground=fg, font=strong, padding=(2 * gap, gap + 1))
+        style.map(name, foreground=[("disabled", muted)])
+
+    button_style("Pair.TButton", surface, accent, "white", "#5c25a4", "#4d1b90")
+    button_style("Next.TButton", paper, accent, "white", "#5c25a4", "#4d1b90")
+    button_style("Open.TButton", surface, surface, ink, "#f5f0f9", "#eae1f0", "#b9adbf")
+    button_style("Plain.TButton", paper, paper, accent, "#eee6f6", "#e4d7ee", "#998aa7")
+    button_style("Link.TButton", surface, surface, accent, "#f4eff9", "#e3d8ed")
 
     def label(parent, text, bg=surface, fg=ink, face=base, **options):
         return tk.Label(parent, text=text, bg=bg, fg=fg, font=face, anchor="w",
@@ -116,8 +153,8 @@ def open_setup(profile_path):
     card = tk.Frame(root, bg=surface, padx=inset, pady=inset,
                     highlightthickness=1, highlightbackground="#ded7e4")
     card.pack(fill="x", padx=inset, pady=(inset, gap))
-    label(card, "Get an invitation", face=heading).pack(anchor="w")
-    label(card, "Open MyMusik and go to Insights → Connect a device.", fg=muted,
+    label(card, "Open Insights", face=heading).pack(anchor="w")
+    label(card, "In MyMusik, open your profile menu and select Insights.", fg=muted,
           wraplength=line_width).pack(anchor="w", pady=(gap // 2, gap))
     launch = tk.Frame(card, bg=surface)
     launch.pack(anchor="w")
@@ -135,12 +172,17 @@ def open_setup(profile_path):
         except OSError:
             feedback("Open MyMusik from your apps, or choose Download MyMusik.")
 
-    ttk.Button(launch, text="Open MyMusik", style="Plain.TButton", command=open_player).pack(side="left")
+    ttk.Button(launch, text="Open MyMusik", style="Open.TButton", command=open_player).pack(side="left")
     ttk.Button(launch, text="Download MyMusik", style="Link.TButton",
                command=lambda: webbrowser.open("https://mymusik.app/en/download/")).pack(side="left", padx=gap)
     tk.Frame(card, bg="#e6dfea", height=1).pack(fill="x", pady=2 * gap)
-    label(card, "Pair this computer", face=heading).pack(anchor="w")
-    label(card, "Choose access and a duration using the shield. Select Apply, then Copy agent prompt.",
+    label(card, "Choose QR code permissions", face=heading).pack(anchor="w")
+    label(card, "Find the Connect a device card. Select the shield at the right end of its header, above the QR code.",
+          fg=muted, wraplength=line_width).pack(anchor="w", pady=(gap // 2, gap))
+    label(card, "In QR code access, choose a permission preset and session duration, then select Apply.",
+          fg=muted, wraplength=line_width).pack(anchor="w", pady=(gap // 2, gap))
+    label(card, "Pair this computer", face=heading).pack(anchor="w", pady=(gap, 0))
+    label(card, "Below the QR code, select Copy agent prompt (AI agent in the compact view). Then return here.",
           fg=muted, wraplength=line_width).pack(anchor="w", pady=(gap // 2, gap))
     results = queue.Queue()
 
@@ -166,7 +208,7 @@ def open_setup(profile_path):
         if success:
             hero.configure(text="Your player is connected")
             subtitle.configure(text="Reconnect MyMusik in your MCP client, then ask it to list three albums.")
-            config_button.configure(style="Pair.TButton")
+            config_button.configure(style="Next.TButton")
             card.pack_forget()
             renew_button.pack(side="left", padx=gap)
             config_button.focus_set()

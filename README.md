@@ -45,7 +45,7 @@ To switch access on an existing connection, apply the new permissions in MyMusik
 **Guided setup from this checkout** (Python 3.10+ with Tk). On Windows, extract the repository ZIP into a folder you intend to keep and double-click **MyMusik Setup.pyw**. From a terminal on any desktop, run `python plugins/mymusik/mymusik_mcp/cli.py setup` in that folder. If you installed the connector from this checkout, run `mymusik-mcp setup`.
 
 1. Choose **Open MyMusik** or **Download MyMusik**. Add an album and leave the player open.
-2. In **Insights → Connect a device**, choose permissions and a session duration using the shield. Select **Apply → Copy agent prompt**.
+2. Open the **profile menu → Insights**. On the **Connect a device** card, select the shield at the right end of the header, above the QR code. In **QR code access**, choose a permission preset and session duration. Select **Apply**, then **Copy agent prompt** below the QR code (**AI agent** in the compact view).
 3. In setup, choose **Paste invitation and pair**. The window checks the connection and saves the session under your operating-system account.
 4. Reconnect the MyMusik plugin in your MCP client. For a client configured with JSON, choose **Copy client configuration** and add its `mymusik` entry to your client's `mcpServers`. The paths point to this connector installation.
 5. Ask **“List three albums from my MyMusik library.”** Compare the titles with the Albums screen.
@@ -59,7 +59,7 @@ To switch access on an existing connection, apply the new permissions in MyMusik
    python -m pip install https://github.com/shagg-ai/mymusik-mcp/releases/download/v0.2.0/mymusik_mcp-0.2.0-py3-none-any.whl
    ```
 
-3. In MyMusik, open **Insights → Connect a device**. Select the shield, choose **Read only** to browse or **Remote playback** to play music, pick a session duration, then **Apply → Copy agent prompt**.
+3. Open the **profile menu → Insights**. On the **Connect a device** card, select the shield at the right end of the header, above the QR code. In **QR code access**, choose **Read only** to browse or **Remote playback** to play music, and set the session duration. Select **Apply**, then **Copy agent prompt** below the QR code (**AI agent** in the compact view).
 4. Run the pairing command below. At the hidden input, paste **only the invitation URL containing `#grant=`** from the copied prompt and press Enter. Each invitation works once.
 
    ```sh
@@ -78,6 +78,8 @@ When access expires, copy a fresh invitation, run `mymusik-mcp pair` again and r
 codex plugin marketplace add shagg-ai/mymusik-mcp
 codex plugin add mymusik@mymusik-plugins
 ```
+
+**Cursor.** Install the wheel and pair on the computer running Cursor using the steps above. Make sure `mymusik-mcp` is on Cursor’s PATH. To try the plugin from GitHub, clone this repository into `~/.cursor/plugins/local/mymusik`, reload Cursor, and enable MyMusik under **Customize**. Open a chat and ask “List three albums from my MyMusik library.” With **Remote playback** access, try “Resume playback in MyMusik.” The plugin uses your existing pairing profile.
 
 **Gemini CLI.** After pairing, install the extension from the repository and start a new Gemini CLI session. The extension runs the bundled connector with `python` on your PATH.
 

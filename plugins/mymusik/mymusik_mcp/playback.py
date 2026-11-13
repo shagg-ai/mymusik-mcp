@@ -37,7 +37,9 @@ class UnpairedMyMusik:
         reply = {"jsonrpc": "2.0", "id": message["id"]}
         method = message["method"]
         instruction = ("On the computer running your MCP client, open MyMusik Setup with mymusik-mcp setup. "
-                       "It can open or download MyMusik and pair using Copy agent prompt from Insights → Connect a device. "
+                       "In MyMusik, open the profile menu and select Insights. In the Connect a device card header, "
+                       "select the shield above the QR code. Choose permissions and a session duration in QR code access, "
+                       "select Apply, then Copy agent prompt below the QR code. In setup, choose Paste invitation and pair. "
                        "For terminal pairing, use mymusik-mcp pair. Reconnect the client after pairing.")
         if method == "initialize":
             version = message.get("params", {}).get("protocolVersion")
