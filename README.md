@@ -1,6 +1,8 @@
 # MyMusik MCP
 
-Ask Claude, Codex or another MCP client to find an album in your own music collection, queue a playlist or organize tracks. The connector runs on the computer that runs your MCP client. It talks to your open MyMusik app on the same computer or over your private network. You choose what it can do and when its access expires.
+Ask Claude, Codex or another MCP client to play music from your own library. Try **“Play my Road Trip playlist.”** The music plays in MyMusik, and you can pause, skip or pick the next album from the same chat. You can also import recordings, cut clips and organize your collection.
+
+The connector runs on the computer that runs your MCP client. It talks to your open MyMusik app on the same computer or over your private network. You choose what it can do and when its access expires.
 
 **Get MyMusik** · [Windows on the Microsoft Store](https://apps.microsoft.com/detail/9PHH0491K006) · [Android on Google Play](https://play.google.com/store/apps/details?id=com.shaggai.mymusik) · [Linux AppImage](https://mymusik.app/en/download/) · [MyMusik website](https://mymusik.app/)
 
@@ -17,29 +19,26 @@ MyMusik is an offline music player and library manager for the files you own. Im
 
 ## What you can ask
 
-### Import and edit audio
+Choose **Remote playback** when you pair to try the first three rows. Use the name of a song, album or playlist from your own library.
 
-- **Import a folder.** “Import the audio files from my Rehearsals folder. When the import finishes, list the tracks that made it into my library and flag any files I need to review.”
-- **Cut an intro.** “Cut the first eight seconds of count-in from my track ‘Friday rehearsal’.”
-- **Extract a clip.** “Take 01:12 to 01:42 from ‘Friday rehearsal’ and save those 30 seconds as a new track called ‘Bridge idea’.”
+| I want to… | What to say |
+| --- | --- |
+| **Play music** | “Play my Road Trip playlist.” |
+| **Pause, resume or skip** | “Pause the music.” · “Keep playing.” · “Skip this song.” |
+| **Choose what plays next** | “Let this song finish, then play my Friday rehearsal album.” |
+| Find something to listen to | “Which albums by Paper Skies do I have? Show me the tracks on the first one.” |
+| Make a playlist | “Make a playlist called Night Drive from the songs I’ve tagged Driving.” |
+| Sort albums into folders | “In MyMusik, create a Live Sets folder with a subfolder for each artist. Sort my albums tagged Live into those folders.” |
+| Add tags to several tracks | “Tag every song on Friday rehearsal as Practice. Keep the tags I already have.” |
+| Fix artist names | “Show me the tracks credited to ‘PaperSkies’ so I can pick which ones to rename to ‘Paper Skies’.” |
+| Import music | “Import the audio from my Rehearsals folder and tell me which files need review.” |
+| Trim a recording | “Cut the first eight seconds of count-in from Friday rehearsal.” |
+| Save a clip as a new track | “Save 01:12 to 01:42 from Friday rehearsal as a new track called Bridge Idea.” |
+| Export a playlist | “Export Night Drive as an M3U8 playlist and make a ZIP of its MP3s.” |
 
-Choose **Import manager** for import and audio-editing operations. Give MyMusik a path it can read on the device where the app is running. Cuts need editable local audio. To create and organize a new track in the same request, use **Custom** with write access to **Imports and files** and **Music library**.
+**Choose what your assistant can change.** Use **Read only** to browse, **Remote playback** to listen, **Library editor** for playlists, folders, tags and track details, or **Import manager** for imports and audio edits. To save a clip as a new library track, choose **Custom** and allow writes to both **Imports and files** and **Music library**. Imports need a source MyMusik can read, cuts need editable local audio, and downloads need a client that can save files.
 
-### Organize your collection
-
-- **Sort albums into folders.** “Create a MyMusik folder called ‘Live sets’ with a subfolder for each artist. Find the albums tagged ‘Live’ and add each one to its artist’s folder.” MyMusik folders group entries in your library.
-- **Tag tracks in bulk.** “Add the ‘Practice’ tag to every track on my Friday rehearsal album. Keep its existing tags so I can still find it under ‘Live’.”
-- **Fix metadata.** “Find tracks credited to ‘Paper Skies’ or ‘PaperSkies’. Show me both sets, then change the artist spelling to ‘Paper Skies’ on the tracks I choose.”
-- **Build a playlist.** “Make a playlist called ‘Next rehearsal’ from tracks tagged ‘Practice’. Put ‘Bridge idea’ first and include each track once.”
-
-Use **Read only** to search or preview the changes. Choose **Library editor** to save folders, tags, metadata and playlists.
-
-### Play and export
-
-- **Control the queue.** “Play ‘Next rehearsal’. Queue my Friday rehearsal album after it.” Choose **Remote playback**.
-- **Export a playlist and its audio.** “Export ‘Next rehearsal’ as an M3U8 playlist. Also prepare a ZIP of its tracks as tagged MP3s so I can take the audio with me.” The M3U8 contains references to the tracks. The ZIP requires exportable audio, and your client needs to support saving the download.
-
-To change permissions, apply the new settings in MyMusik, copy a fresh invitation, run `mymusik-mcp pair` again and reconnect your client. [MyMusik access presets and examples](https://mymusik.app/en/music-mcp-server/)
+To switch access on an existing connection, apply the new permissions in MyMusik, copy a fresh invitation, run `mymusik-mcp pair` again and reconnect your client. [Illustrated permissions guide](https://mymusik.app/en/music-mcp-server/)
 
 ## Pair and find your first albums
 
@@ -50,14 +49,14 @@ To change permissions, apply the new settings in MyMusik, copy a fresh invitatio
    python -m pip install https://github.com/shagg-ai/mymusik-mcp/releases/download/v0.1.0/mymusik_mcp-0.1.0-py3-none-any.whl
    ```
 
-3. In MyMusik, open **Insights → Connect a device**. Select the shield, choose **Read only** and a session duration, then **Apply → Copy agent prompt**.
+3. In MyMusik, open **Insights → Connect a device**. Select the shield, choose **Read only** to browse or **Remote playback** to play music, pick a session duration, then **Apply → Copy agent prompt**.
 4. Run the pairing command below. At the hidden input, paste **only the invitation URL containing `#grant=`** from the copied prompt and press Enter. Each invitation works once.
 
    ```sh
    mymusik-mcp pair
    ```
 
-5. [Connect your MCP client](#connect-your-mcp-client), then ask **“List three albums from my MyMusik library.”** Open **Albums** in MyMusik to compare the names.
+5. [Connect your MCP client](#connect-your-mcp-client), then ask **“List three albums from my MyMusik library.”** Open **Albums** in MyMusik to compare the names. With **Remote playback**, follow up with **“Play the first one.”**
 
 When access expires, copy a fresh invitation, run `mymusik-mcp pair` again and reconnect or restart the server in your client. [Illustrated pairing guide](https://mymusik.app/en/music-mcp-server/)
 
