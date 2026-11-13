@@ -46,7 +46,7 @@ To switch access on an existing connection, apply the new permissions in MyMusik
 
 1. Choose **Open pairing settings**. On a desktop player that supports the pairing link, this opens **QR code access**. For an older player or a player on another device, use **Can’t find it?** Open the player’s **profile menu → Insights**, then select the shield in the **Connect a device** header.
 2. Choose a permission preset and session duration, select **Apply**, then **Copy agent prompt** under the QR code (**AI agent** in compact view). Return to setup and select **Paste invitation and pair**.
-3. Reconnect MyMusik in your MCP client. Choose **Copy first prompt** and paste it into the chat. If your client requires JSON, expand **Manual client setup** and add the copied MyMusik entry to its existing configuration.
+3. For Claude Desktop on Windows x64, choose **Install Claude Desktop extension** on the connected screen and confirm in Claude. The installer includes the extension and its runtime. If you already have the extension, reconnect it. For other MCP clients, reconnect MyMusik. Choose **Copy first prompt** and paste it into the chat. If your client requires JSON, expand **Manual client setup** and add the copied MyMusik entry to its existing configuration.
 4. Next time, setup checks your saved session. If the player is offline, open it and select **Retry**. If access expired, copy a fresh invitation.
 
 **From source** (Python 3.10+ with Tk), run `python plugins/mymusik/mymusik_mcp/cli.py setup` or double-click **MyMusik Setup.pyw** in the extracted checkout. Keep the checkout in place if using its JSON configuration.

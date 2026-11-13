@@ -37,7 +37,7 @@ def main():
         args = parser.parse_args()
         command = args.command or ("setup" if sys.stdin.isatty() and sys.stdout.isatty() else "stdio")
         if command == "setup":
-            setup.open_setup(args.profile)
+            setup.open_setup(args.profile, offer_extension=args.profile.absolute() == default_profile().absolute())
         elif command == "config":
             print(json.dumps(setup.client_config(args.profile), indent=2))
         elif command == "pair":
@@ -62,7 +62,7 @@ def main():
 
 
 def desktop_setup():
-    setup.open_setup(default_profile())
+    setup.open_setup(default_profile(), offer_extension=True)
 
 
 if __name__ == "__main__":

@@ -81,7 +81,7 @@ def client_config(profile_path):
     return {"mcpServers": {"mymusik": {"command": str(executable), "args": args}}}
 
 
-def open_setup(profile_path):
+def open_setup(profile_path, *, offer_extension=False):
     try:
         import tkinter as tk
         from tkinter import font, ttk
@@ -315,6 +315,26 @@ def open_setup(profile_path):
                    "Copied. Paste it into your MCP chat."), "Pair.TButton")
     first.pack(side="left")
     action(connected_actions, "Pair again", show_pairing, "Link.TButton").pack(side="left", padx=gap)
+
+    if offer_extension and os.name == "nt" and getattr(sys, "frozen", False):
+        bundle = Path(sys.executable).with_name("MyMusik-Windows-x64.mcpb")
+        if bundle.is_file():
+            def open_extension():
+                try:
+                    os.startfile(bundle)
+                except OSError:
+                    # Let the user locate the file even without an MCPB association.
+                    import subprocess
+                    try:
+                        subprocess.Popen(["explorer.exe", "/select,", str(bundle)])
+                    except OSError:
+                        pass
+                    prompt_hint.configure(text=f"Open this file in Claude Desktop: {bundle}")
+                else:
+                    prompt_hint.configure(text="Confirm the extension install in Claude Desktop, then copy your first prompt.")
+
+            action(connected, "Install Claude Desktop extension", open_extension, "Open.TButton").pack(
+                anchor="w", pady=(gap, 0))
 
     def finish():
         try:

@@ -12,4 +12,4 @@ Run these steps from the standalone release repository with publishing access to
 
 ## Windows desktop installer
 
-On Windows x64, install Python with Tk, PyInstaller 6 and NSIS 3. From the connector root run `python build_windows.py --makensis "C:\Program Files (x86)\NSIS\makensis.exe"`. The output is `dist/MyMusik-MCP-Setup-x64.exe`. Test installation, the Start menu shortcut, the copied JSON launch command, and uninstallation under a standard Windows account before distributing the installer. Direct pairing settings also require the matching desktop player update.
+On Windows x64, install Python with Tk, PyInstaller 6 and NSIS 3. From the connector root run `python build_windows.py --makensis "C:\Program Files (x86)\NSIS\makensis.exe"`. The outputs are `dist/MyMusik-MCP-Setup-x64.exe` and `dist/MyMusik-Windows-x64.mcpb`. The installer includes a copy of the Windows extension for offline installation. Test installation, the Start menu shortcut, the copied JSON launch command, and uninstallation under a standard Windows account before distributing the installer. Direct pairing settings also require the matching desktop player update.
