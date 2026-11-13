@@ -28,6 +28,34 @@ TOOL = {
 }
 
 
+class UnpairedMyMusik:
+    """Offer connector-owned discovery until the user pairs and restarts the client."""
+
+    def rpc(self, message, cancellation=None):
+        if "id" not in message:
+            return None
+        reply = {"jsonrpc": "2.0", "id": message["id"]}
+        method = message["method"]
+        instruction = "Pair with the running MyMusik app using mymusik-mcp pair, then restart the connector."
+        if method == "initialize":
+            version = message.get("params", {}).get("protocolVersion")
+            result = {
+                "protocolVersion": version if version in bridge.SUPPORTED_VERSIONS[:3] else bridge.VERSION,
+                "serverInfo": {"name": "MyMusik", "version": "0.2.0"},
+                "capabilities": {"tools": {}},
+                "instructions": instruction,
+            }
+        elif method == "ping":
+            result = {}
+        elif method == "tools/list":
+            result = {"tools": [TOOL]}
+        elif method == "tools/call":
+            result = {"isError": True, "content": [{"type": "text", "text": instruction}]}
+        else:
+            return {**reply, "error": {"code": -32601, "message": "Method not found."}}
+        return {**reply, "result": result}
+
+
 class MyMusikTransport(bridge.Transport):
     def rpc(self, message, cancellation=None):
         method = message.get("method")
