@@ -1,0 +1,11 @@
+{
+  "name": "mymusik",
+  "version": "0.2.0",
+  "description": "Play music and manage your library in a running MyMusik app using a paired local connection.",
+  "mcpServers": {
+    "mymusik": {
+      "command": "python",
+      "args": ["-B", "${extensionPath}/plugins/mymusik/mymusik_mcp/cli.py", "stdio"]
+    }
+  }
+}
