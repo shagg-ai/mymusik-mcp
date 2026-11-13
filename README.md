@@ -72,7 +72,7 @@ codex plugin add mymusik@mymusik-plugins
 **Gemini CLI.** After pairing, install the extension from the repository and start a new Gemini CLI session. The extension runs the bundled connector with `python` on your PATH.
 
 ```sh
-gemini extensions install https://github.com/shagg-ai/mymusik-mcp --ref=main
+gemini extensions install https://github.com/shagg-ai/mymusik-mcp
 ```
 
 **Claude Code.** Clone this repository and start a local session with the bundled plugin. It uses `python` on your PATH and reads the session you paired above.
