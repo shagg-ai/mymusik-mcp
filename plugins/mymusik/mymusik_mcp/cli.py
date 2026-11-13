@@ -9,10 +9,10 @@ import sys
 
 if __package__:
     from . import mcp_stdio as bridge
-    from .playback import MyMusikTransport
+    from .playback import MyMusikTransport, UnpairedMyMusik
 else:  # Plugin hosts run this file with their own Python interpreter.
     import mcp_stdio as bridge
-    from playback import MyMusikTransport
+    from playback import MyMusikTransport, UnpairedMyMusik
 
 
 def default_profile():
@@ -39,8 +39,12 @@ def main():
             bridge.save_profile(args.profile, profile)
             print(json.dumps({"connected": True, "serverInfo": hello["serverInfo"]}))
         else:
-            bridge.serve(bridge.load_profile(args.profile), timeout=args.request_timeout,
-                         transport_factory=MyMusikTransport)
+            try:
+                profile = bridge.load_profile(args.profile)
+            except FileNotFoundError:
+                bridge.serve_transport(UnpairedMyMusik())
+            else:
+                bridge.serve(profile, timeout=args.request_timeout, transport_factory=MyMusikTransport)
     except (bridge.BridgeError, OSError, ValueError, KeyError, TypeError):
         print("MyMusik connection failed. Check that MyMusik is running and pair with a fresh invitation using mymusik-mcp pair.", file=sys.stderr)
         return 1
