@@ -11,9 +11,9 @@
   },
   "packages": [
     {
-      "registryType": "pypi",
-      "identifier": "mymusik-mcp",
-      "version": "0.1.0",
+      "registryType": "mcpb",
+      "identifier": "https://github.com/shagg-ai/mymusik-mcp/releases/download/v0.1.0/mymusik-mcp.mcpb",
+      "fileSha256": "fb1538c5930b1e81c03da6fdc8ad9b1d465dfabef2f14ab1deb2f51278edf805",
       "transport": {
         "type": "stdio"
       }

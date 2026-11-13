@@ -1,0 +1,25 @@
+{
+  "manifest_version": "0.3",
+  "name": "mymusik-mcp",
+  "display_name": "MyMusik",
+  "version": "0.1.0",
+  "description": "Connect to your running MyMusik app to search your music library, manage playlists and control playback with selected permissions.",
+  "author": {
+    "name": "MyMusik"
+  },
+  "homepage": "https://mymusik.app/en/music-mcp-server/",
+  "license": "MIT",
+  "icon": "icon.png",
+  "server": {
+    "type": "python",
+    "entry_point": "mymusik_mcp/cli.py",
+    "mcp_config": {
+      "command": "python",
+      "args": [
+        "-B",
+        "${__dirname}/mymusik_mcp/cli.py",
+        "stdio"
+      ]
+    }
+  }
+}

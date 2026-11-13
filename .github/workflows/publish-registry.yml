@@ -1,0 +1,21 @@
+name: Publish MCP Registry listing
+on: workflow_dispatch
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify release asset and publish listing
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 2 "$(jq -r '.packages[0].identifier' server.json)" -o "$RUNNER_TEMP/bundle.mcpb"
+          echo "$(jq -r '.packages[0].fileSha256' server.json)  $RUNNER_TEMP/bundle.mcpb" | sha256sum --check
+          curl --fail --location --retry 2 https://github.com/modelcontextprotocol/registry/releases/download/v1.8.9/mcp-publisher_linux_amd64.tar.gz -o "$RUNNER_TEMP/publisher.tar.gz"
+          echo "4d527ca8f1ced0394c962dc925c2a4a4addef441cbefd62501c875e9481823a8  $RUNNER_TEMP/publisher.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/publisher.tar.gz" -C "$RUNNER_TEMP" mcp-publisher
+          "$RUNNER_TEMP/mcp-publisher" login github-oidc
+          "$RUNNER_TEMP/mcp-publisher" publish
