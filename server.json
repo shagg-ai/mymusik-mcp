@@ -3,7 +3,7 @@
   "name": "io.github.shagg-ai/mymusik-mcp",
   "title": "MyMusik",
   "description": "Search your own music library and control a running MyMusik app with the permissions you choose.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "websiteUrl": "https://mymusik.app/en/music-mcp-server/",
   "repository": {
     "url": "https://github.com/shagg-ai/mymusik-mcp",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/shagg-ai/mymusik-mcp/releases/download/v0.1.0/mymusik-mcp.mcpb",
-      "fileSha256": "fb1538c5930b1e81c03da6fdc8ad9b1d465dfabef2f14ab1deb2f51278edf805",
+      "identifier": "https://github.com/shagg-ai/mymusik-mcp/releases/download/v0.2.0/mymusik-mcp.mcpb",
+      "fileSha256": "8b7c33e99984b580f6f71e23ae0b27291d8a619ecf33e41bb6e1053495586e1e",
       "transport": {
         "type": "stdio"
       }

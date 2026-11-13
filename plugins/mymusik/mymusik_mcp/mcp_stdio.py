@@ -372,9 +372,9 @@ def pair(invitation, endpoint=None):
     return {"version": 1, "endpoint": endpoint or origin, "origin": origin, "cookie": transport.cookie}, hello["result"]
 
 
-def serve(profile, source=None, output=None, timeout=DEFAULT_TIMEOUT):
+def serve(profile, source=None, output=None, timeout=DEFAULT_TIMEOUT, *, transport_factory=Transport):
     source, output = source or sys.stdin.buffer, output or sys.stdout.buffer
-    transport = Transport(profile["endpoint"], profile["origin"], profile["cookie"], timeout=timeout)
+    transport = transport_factory(profile["endpoint"], profile["origin"], profile["cookie"], timeout=timeout)
     output_lock, pending_lock = threading.Lock(), threading.Lock()
     pending = {}
     slots = threading.Semaphore(16)

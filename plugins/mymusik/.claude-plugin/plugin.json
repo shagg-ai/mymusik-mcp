@@ -1,6 +1,6 @@
 {
   "name": "mymusik",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Search your own albums and organize playlists in the running MyMusik app using a paired local connection.",
   "author": {
     "name": "MyMusik"

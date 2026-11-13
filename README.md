@@ -6,7 +6,7 @@ The connector runs on the computer that runs your MCP client. It talks to your o
 
 **Get MyMusik** · [Windows on the Microsoft Store](https://apps.microsoft.com/detail/9PHH0491K006) · [Android on Google Play](https://play.google.com/store/apps/details?id=com.shaggai.mymusik) · [Linux AppImage](https://mymusik.app/en/download/) · [MyMusik website](https://mymusik.app/)
 
-**Get the connector** · [Release downloads](https://github.com/shagg-ai/mymusik-mcp/releases/tag/v0.1.0) · [Official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.shagg-ai%2Fmymusik-mcp/versions/latest) · [Pair and find your first albums](#pair-and-find-your-first-albums)
+**Get the connector** · [Release downloads](https://github.com/shagg-ai/mymusik-mcp/releases/tag/v0.2.0) · [Official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.shagg-ai%2Fmymusik-mcp/versions/latest) · [Pair and find your first albums](#pair-and-find-your-first-albums)
 
 <!-- mcp-name: io.github.shagg-ai/mymusik-mcp -->
 
@@ -19,7 +19,7 @@ MyMusik is an offline music player and library manager for the files you own. Im
 
 ## What you can ask
 
-Choose **Remote playback** when you pair to try the first three rows. Use the name of a song, album or playlist from your own library.
+Choose **Remote playback** when you pair to try the first three rows. Version 0.2.0 adds a direct tool for pausing, resuming and skipping in the current queue. Use the name of a song, album or playlist from your own library.
 
 | I want to… | What to say |
 | --- | --- |
@@ -46,7 +46,7 @@ To switch access on an existing connection, apply the new permissions in MyMusik
 2. On the computer running your MCP client, install Python 3.10 or newer and run the following command. If you use a virtual environment, activate it first.
 
    ```sh
-   python -m pip install https://github.com/shagg-ai/mymusik-mcp/releases/download/v0.1.0/mymusik_mcp-0.1.0-py3-none-any.whl
+   python -m pip install https://github.com/shagg-ai/mymusik-mcp/releases/download/v0.2.0/mymusik_mcp-0.2.0-py3-none-any.whl
    ```
 
 3. In MyMusik, open **Insights → Connect a device**. Select the shield, choose **Read only** to browse or **Remote playback** to play music, pick a session duration, then **Apply → Copy agent prompt**.
@@ -77,7 +77,7 @@ cd mymusik-mcp
 claude --plugin-dir ./plugins/mymusik
 ```
 
-**Other local MCP clients.** If your client accepts MCP bundles, [download the MCPB](https://github.com/shagg-ai/mymusik-mcp/releases/download/v0.1.0/mymusik-mcp.mcpb) and open it in the client. For clients with an `mcpServers` configuration, use this configuration.
+**Other local MCP clients.** If your client accepts MCP bundles, [download the MCPB](https://github.com/shagg-ai/mymusik-mcp/releases/download/v0.2.0/mymusik-mcp.mcpb) and open it in the client. For clients with an `mcpServers` configuration, use this configuration.
 
 ```json
 {

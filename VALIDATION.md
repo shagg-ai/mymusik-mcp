@@ -1,4 +1,10 @@
-# MyMusik MCP 0.1.0 release checks
+# MyMusik MCP 0.2.0 release checks
+
+The published wheel was built from the source archive and installed into a fresh Windows Python 3.13 environment. All 19 shared bridge tests and the new playback integration test passed. The playback test launches the stdio command against a local HTTP test server and checks discovery, the four actions, session-cookie forwarding, invalid input and a permission denial without a retry.
+
+The four operation IDs match MyMusik’s published API contract. The extracted MCPB passed the same playback test, the bundle hash matched the registry manifest, and Claude Code validated the plugin. Audio output on a running MyMusik app was not exercised in this release check.
+
+## MyMusik MCP 0.1.0 release checks
 
 Validated on Windows on 2026-11-12 with Python 3.13 and the local MyMusik 1.2.6 debug application.
 
