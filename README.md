@@ -17,12 +17,29 @@ MyMusik is an offline music player and library manager for the files you own. Im
 
 ## What you can ask
 
-| Ask your MCP client | Access to choose in MyMusik |
-| --- | --- |
-| “List three albums from my MyMusik library.” | **Read only** |
-| “Which tracks by this artist are already in my library?” | **Read only** |
-| “Play my Road Trip playlist, then skip to the next track.” | **Remote playback** |
-| “Suggest ten songs from my library for a night drive. Show me the list before saving it as a playlist.” | **Read only** for suggestions, **Library editor** to save |
+### Import and edit audio
+
+- **Import a folder.** “Import the audio files from my Rehearsals folder. When the import finishes, list the tracks that made it into my library and flag any files I need to review.”
+- **Cut an intro.** “Cut the first eight seconds of count-in from my track ‘Friday rehearsal’.”
+- **Extract a clip.** “Take 01:12 to 01:42 from ‘Friday rehearsal’ and save those 30 seconds as a new track called ‘Bridge idea’.”
+
+Choose **Import manager** for import and audio-editing operations. Give MyMusik a path it can read on the device where the app is running. Cuts need editable local audio. To create and organize a new track in the same request, use **Custom** with write access to **Imports and files** and **Music library**.
+
+### Organize your collection
+
+- **Sort albums into folders.** “Create a MyMusik folder called ‘Live sets’ with a subfolder for each artist. Find the albums tagged ‘Live’ and add each one to its artist’s folder.” MyMusik folders group entries in your library.
+- **Tag tracks in bulk.** “Add the ‘Practice’ tag to every track on my Friday rehearsal album. Keep its existing tags so I can still find it under ‘Live’.”
+- **Fix metadata.** “Find tracks credited to ‘Paper Skies’ or ‘PaperSkies’. Show me both sets, then change the artist spelling to ‘Paper Skies’ on the tracks I choose.”
+- **Build a playlist.** “Make a playlist called ‘Next rehearsal’ from tracks tagged ‘Practice’. Put ‘Bridge idea’ first and include each track once.”
+
+Use **Read only** to search or preview the changes. Choose **Library editor** to save folders, tags, metadata and playlists.
+
+### Play and export
+
+- **Control the queue.** “Play ‘Next rehearsal’. Queue my Friday rehearsal album after it.” Choose **Remote playback**.
+- **Export a playlist and its audio.** “Export ‘Next rehearsal’ as an M3U8 playlist. Also prepare a ZIP of its tracks as tagged MP3s so I can take the audio with me.” The M3U8 contains references to the tracks. The ZIP requires exportable audio, and your client needs to support saving the download.
+
+To change permissions, apply the new settings in MyMusik, copy a fresh invitation, run `mymusik-mcp pair` again and reconnect your client. [MyMusik access presets and examples](https://mymusik.app/en/music-mcp-server/)
 
 ## Pair and find your first albums
 
