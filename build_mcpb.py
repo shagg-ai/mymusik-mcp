@@ -17,6 +17,7 @@ FILES = (
     "mymusik_mcp/mcp_stdio.py",
     "mymusik_mcp/playback.py",
     "mymusik_mcp/setup.py",
+    "mymusik_mcp/setup-icon.png",
 )
 
 
@@ -26,7 +27,7 @@ if __name__ == "__main__":
     with ZipFile(output, "w") as archive:
         for name in FILES:
             data = (PLUGIN / name).read_bytes()
-            if name != "icon.png":
+            if not name.endswith(".png"):
                 data = data.replace(b"\r\n", b"\n")
             entry = ZipInfo(name, date_time=(2026, 11, 12, 0, 0, 0))
             entry.create_system = 0

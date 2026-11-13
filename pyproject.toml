@@ -26,3 +26,6 @@ mymusik-setup = "mymusik_mcp.cli:desktop_setup"
 packages = ["mymusik_mcp"]
 package-dir = { mymusik_mcp = "plugins/mymusik/mymusik_mcp" }
 include-package-data = false
+
+[tool.setuptools.package-data]
+mymusik_mcp = ["setup-icon.png"]

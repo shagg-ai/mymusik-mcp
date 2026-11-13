@@ -6,6 +6,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 ROOT = Path(__file__).resolve().parent
 FILES = (
     "gemini-extension.json", "README.md", "LICENSE",
+    "plugins/mymusik/mymusik_mcp/setup-icon.png",
     *(f"plugins/mymusik/mymusik_mcp/{module}.py"
       for module in ("__init__", "cli", "mcp_stdio", "playback", "setup")),
 )
@@ -21,5 +22,7 @@ if __name__ == "__main__":
                 entry = ZipInfo(path)
                 entry.create_system = 3
                 entry.external_attr = 0o100644 << 16
-                bundle.writestr(entry, (ROOT / path).read_bytes().replace(b"\r\n", b"\n"),
-                                compress_type=ZIP_DEFLATED)
+                data = (ROOT / path).read_bytes()
+                if not path.endswith(".png"):
+                    data = data.replace(b"\r\n", b"\n")
+                bundle.writestr(entry, data, compress_type=ZIP_DEFLATED)
