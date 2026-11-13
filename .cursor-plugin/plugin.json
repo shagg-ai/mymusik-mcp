@@ -1,0 +1,22 @@
+{
+  "name": "mymusik",
+  "displayName": "MyMusik",
+  "version": "0.2.0",
+  "description": "Play music from your own MyMusik library, control the queue, organize playlists and tags, and import or trim audio with the permissions you choose.",
+  "author": {
+    "name": "Shaggai GmbH",
+    "email": "info@shaggai.email"
+  },
+  "homepage": "https://mymusik.app/en/music-mcp-server/",
+  "repository": "https://github.com/shagg-ai/mymusik-mcp",
+  "license": "MIT",
+  "keywords": [
+    "music",
+    "playback",
+    "audio",
+    "playlists",
+    "mcp"
+  ],
+  "logo": "plugins/mymusik/icon.png",
+  "mcpServers": "./.mcp.json"
+}

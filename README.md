@@ -69,6 +69,8 @@ codex plugin marketplace add shagg-ai/mymusik-mcp
 codex plugin add mymusik@mymusik-plugins
 ```
 
+**Cursor.** Install the wheel and pair on the computer running Cursor using the steps above. Make sure `mymusik-mcp` is on Cursor’s PATH. To try the plugin from GitHub, clone this repository into `~/.cursor/plugins/local/mymusik`, reload Cursor, and enable MyMusik under **Customize**. Open a chat and ask “List three albums from my MyMusik library.” With **Remote playback** access, try “Resume playback in MyMusik.” The plugin uses your existing pairing profile.
+
 **Gemini CLI.** After pairing, install the extension from the repository and start a new Gemini CLI session. The extension runs the bundled connector with `python` on your PATH.
 
 ```sh
