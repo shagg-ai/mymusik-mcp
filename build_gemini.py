@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parent
 FILES = (
     "gemini-extension.json", "README.md", "LICENSE",
     *(f"plugins/mymusik/mymusik_mcp/{module}.py"
-      for module in ("__init__", "cli", "mcp_stdio", "playback")),
+      for module in ("__init__", "cli", "mcp_stdio", "playback", "setup")),
 )
 
 

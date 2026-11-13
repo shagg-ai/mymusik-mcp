@@ -36,7 +36,9 @@ class UnpairedMyMusik:
             return None
         reply = {"jsonrpc": "2.0", "id": message["id"]}
         method = message["method"]
-        instruction = "Pair with the running MyMusik app using mymusik-mcp pair, then restart the connector."
+        instruction = ("On the computer running your MCP client, open MyMusik Setup with mymusik-mcp setup. "
+                       "It can open or download MyMusik and pair using Copy agent prompt from Insights → Connect a device. "
+                       "For terminal pairing, use mymusik-mcp pair. Reconnect the client after pairing.")
         if method == "initialize":
             version = message.get("params", {}).get("protocolVersion")
             result = {

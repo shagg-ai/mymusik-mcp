@@ -16,6 +16,7 @@ FILES = (
     "mymusik_mcp/cli.py",
     "mymusik_mcp/mcp_stdio.py",
     "mymusik_mcp/playback.py",
+    "mymusik_mcp/setup.py",
 )
 
 

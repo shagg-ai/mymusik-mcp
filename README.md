@@ -42,6 +42,16 @@ To switch access on an existing connection, apply the new permissions in MyMusik
 
 ## Pair and find your first albums
 
+**Guided setup from this checkout** (Python 3.10+ with Tk). On Windows, extract the repository ZIP into a folder you intend to keep and double-click **MyMusik Setup.pyw**. From a terminal on any desktop, run `python plugins/mymusik/mymusik_mcp/cli.py setup` in that folder. If you installed the connector from this checkout, run `mymusik-mcp setup`.
+
+1. Choose **Open MyMusik** or **Download MyMusik**. Add an album and leave the player open.
+2. In **Insights → Connect a device**, choose permissions and a session duration using the shield. Select **Apply → Copy agent prompt**.
+3. In setup, choose **Paste invitation and pair**. The window checks the connection and saves the session under your operating-system account.
+4. Reconnect the MyMusik plugin in your MCP client. For a client configured with JSON, choose **Copy client configuration** and add its `mymusik` entry to your client's `mcpServers`. The paths point to this connector installation.
+5. Ask **“List three albums from my MyMusik library.”** Compare the titles with the Albums screen.
+
+**Terminal pairing with the released wheel**
+
 1. Install MyMusik, add some music and keep the app running. If the app is on a different device, put both devices on the same private network and enable **Allow Remote Access** in MyMusik’s web server settings.
 2. On the computer running your MCP client, install Python 3.10 or newer and run the following command. If you use a virtual environment, activate it first.
 

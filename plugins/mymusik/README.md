@@ -4,6 +4,10 @@ Use an MCP client to search the music you own in a running MyMusik app. The conn
 
 ## Pair and find your first albums
 
+**Guided setup with this source or bundle:** From the extracted plugin directory, run `python mymusik_mcp/cli.py setup` on a desktop with Python 3.10+ and Tk. The window offers **Open MyMusik** and **Download MyMusik**. In the app, select **Insights → Connect a device → shield**, choose access and a duration, then **Apply → Copy agent prompt**. Back in setup, choose **Paste invitation and pair**. Reconnect the client and ask it to list three albums. If your MCP client uses JSON configuration, **Copy client configuration** provides this installation's exact launch paths.
+
+**Terminal pairing with the released wheel**
+
 1. Install Python 3.10 or newer. Install the release wheel with `python -m pip install https://github.com/shagg-ai/mymusik-mcp/releases/download/v0.2.0/mymusik_mcp-0.2.0-py3-none-any.whl`. Once version 0.2.0 is published on PyPI, you can use `python -m pip install mymusik-mcp==0.2.0`. Activate the environment you installed into before running its commands.
 2. Open MyMusik and go to **Insights → Connect a device**. Open the shield, choose **Read only** and a duration, select **Apply**, and copy the agent prompt. Keep MyMusik running.
 3. Run `mymusik-mcp pair`. At the hidden input, paste just the invitation URL containing `#grant=` from the copied prompt and press Enter. Each invitation can be used once.
