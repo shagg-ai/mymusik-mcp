@@ -1,0 +1,37 @@
+{
+  "identifier": "shagg-ai-mymusik-mcp",
+  "name": "MyMusik",
+  "version": "0.2.0",
+  "description": "Play, pause, and skip music in your running MyMusik app. Browse albums and, with editing access, organize tracks into folders and update tags.",
+  "homepage": "https://mymusik.app/en/music-mcp-server/",
+  "tags": [
+    "music",
+    "playback",
+    "audio",
+    "local"
+  ],
+  "tools": [
+    {
+      "name": "mymusik_playback",
+      "description": "Control the current MyMusik queue. Resume or pause playback, skip to the next track, or go back one track. Requires playback access. To play a particular song, album or playlist by name, use the app's search and API tools.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "resume",
+              "pause",
+              "next",
+              "previous"
+            ]
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ]
+}

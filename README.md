@@ -71,6 +71,19 @@ codex plugin add mymusik@mymusik-plugins
 
 **Cursor.** Install the wheel and pair on the computer running Cursor using the steps above. Make sure `mymusik-mcp` is on Cursor’s PATH. To try the plugin from GitHub, clone this repository into `~/.cursor/plugins/local/mymusik`, reload Cursor, and enable MyMusik under **Customize**. Open a chat and ask “List three albums from my MyMusik library.” With **Remote playback** access, try “Resume playback in MyMusik.” The plugin uses your existing pairing profile.
 
+**Docker Desktop.** From a checkout of this repository, build the connector and pair it with your running MyMusik app. Open **Insights → Connect a device**, choose the permissions and duration, and paste the invitation URL from the copied prompt at the hidden input.
+
+```sh
+docker build -t mymusik-mcp:local .
+docker run --rm -it -v mymusik-profile:/var/lib/mymusik/mymusik-mcp mymusik-mcp:local python -B -m mymusik_mcp.cli pair
+```
+
+Run the following command as your MCP client's stdio server. The connector uses the same private Docker volume. Repeat the pairing command when the session expires. For a local HTTP invitation, Docker Desktop forwards the connection to the host where MyMusik is running.
+
+```sh
+docker run --rm -i -v mymusik-profile:/var/lib/mymusik/mymusik-mcp:ro mymusik-mcp:local
+```
+
 **Gemini CLI.** After pairing, install the extension from the repository and start a new Gemini CLI session. The extension runs the bundled connector with `python` on your PATH.
 
 ```sh

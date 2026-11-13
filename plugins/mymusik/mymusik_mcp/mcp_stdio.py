@@ -167,8 +167,15 @@ class Transport:
     def request(self, method, path, body=None, extra=None, cancellation=None):
         # http.client neither follows redirects nor automatically retries requests.
         cls = http.client.HTTPSConnection if self.url.scheme == "https" else http.client.HTTPConnection
-        connection = cls(self.url.hostname, self.port, timeout=self.timeout)
+        hostname = self.url.hostname
+        desktop_loopback = (os.environ.get("MYMUSIK_DOCKER_DESKTOP") == "1"
+                            and self.url.scheme == "http"
+                            and hostname in ("localhost", "127.0.0.1", "::1"))
+        connection = cls("host.docker.internal" if desktop_loopback else hostname,
+                         self.port, timeout=self.timeout)
         headers = {"Accept": "application/json, text/event-stream", "Origin": self.origin}
+        if desktop_loopback:
+            headers["Host"] = self.url.netloc
         if self.cookie:
             headers["Cookie"] = self.cookie
         if body is not None:
