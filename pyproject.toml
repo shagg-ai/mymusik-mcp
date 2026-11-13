@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mymusik-mcp"
+version = "0.1.0"
+description = "Connect an MCP client to your running MyMusik music library."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "MyMusik" }]
+
+[project.urls]
+Homepage = "https://mymusik.app/en/music-mcp-server/"
+Repository = "https://github.com/shagg-ai/mymusik-mcp"
+
+[project.scripts]
+mymusik-mcp = "mymusik_mcp.cli:main"
+
+[tool.setuptools]
+packages = ["mymusik_mcp"]
+package-dir = { mymusik_mcp = "plugins/mymusik/mymusik_mcp" }
+include-package-data = false

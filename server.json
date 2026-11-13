@@ -1,0 +1,22 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.shagg-ai/mymusik-mcp",
+  "title": "MyMusik",
+  "description": "Search your own music library and control a running MyMusik app with the permissions you choose.",
+  "version": "0.1.0",
+  "websiteUrl": "https://mymusik.app/en/music-mcp-server/",
+  "repository": {
+    "url": "https://github.com/shagg-ai/mymusik-mcp",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "mymusik-mcp",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

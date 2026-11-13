@@ -1,0 +1,20 @@
+{
+  "name": "mymusik-plugins",
+  "interface": {
+    "displayName": "MyMusik"
+  },
+  "plugins": [
+    {
+      "name": "mymusik",
+      "source": {
+        "source": "local",
+        "path": "./plugins/mymusik"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

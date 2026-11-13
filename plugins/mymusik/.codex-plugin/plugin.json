@@ -1,0 +1,27 @@
+{
+  "name": "mymusik",
+  "version": "0.1.0",
+  "description": "Search and organize your local MyMusik library.",
+  "author": {
+    "name": "MyMusik"
+  },
+  "license": "MIT",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "MyMusik",
+    "shortDescription": "Search your music library",
+    "longDescription": "Connect to a running MyMusik app to explore your own albums, playlists and songs with the permissions you choose.",
+    "developerName": "MyMusik",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://mymusik.app/en/music-mcp-server/",
+    "logo": "./icon.png",
+    "composerIcon": "./icon.png",
+    "defaultPrompt": [
+      "List three albums from my MyMusik library."
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+include server.json RELEASING.md
+include .agents/plugins/marketplace.json
+include plugins/mymusik/.claude-plugin/plugin.json
+include plugins/mymusik/.codex-plugin/plugin.json
+include plugins/mymusik/.mcp.json
+include plugins/mymusik/README.md plugins/mymusik/LICENSE plugins/mymusik/icon.png
