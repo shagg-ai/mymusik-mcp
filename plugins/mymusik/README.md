@@ -6,9 +6,9 @@ Use an MCP client to search the music you own in a running MyMusik app. The conn
 
 **Guided setup with this source or bundle:** From the extracted plugin directory, run `python mymusik_mcp/cli.py setup` on a desktop with Python 3.10+ and Tk. The window offers **Open MyMusik** and **Download MyMusik**.
 
-1. Open the **profile menu → Insights**. On the **Connect a device** card, select the shield at the right end of the header, above the QR code.
+1. Select **Open pairing settings** in desktop setup. If using an older player or another device, open the **profile menu → Insights**. On the **Connect a device** card, select the shield at the right end of the header, above the QR code.
 2. In **QR code access**, choose a permission preset and session duration. Select **Apply**, then **Copy agent prompt** below the QR code (**AI agent** in the compact view).
-3. Back in setup, choose **Paste invitation and pair**. Reconnect the client and ask it to list three albums. If your MCP client uses JSON configuration, **Copy client configuration** provides this installation's exact launch paths.
+3. Back in setup, choose **Paste invitation and pair**. Reconnect the client and ask it to list three albums. If your MCP client uses JSON configuration, **Manual client setup → Copy client configuration** provides this installation's exact launch paths.
 
 **Terminal pairing with the released wheel**
 
@@ -31,3 +31,5 @@ For Claude Code, start a local session with `claude --plugin-dir ./plugins/mymus
 The connector stores the paired session under `%LOCALAPPDATA%/mymusik-mcp/connection.profile` on Windows, protected with Windows user-scoped DPAPI. On other systems it uses a private file with mode 0600 under `$XDG_CONFIG_HOME/mymusik-mcp` or `~/.config/mymusik-mcp`. Deleting the profile removes the connector's saved session. Keep invitations and profiles private. Tool results go to the MCP client you choose. Library edits and playback depend on the permissions granted in MyMusik.
 
 With playback access, ask your client to pause, resume, skip or go back a track. The bundled mymusik_playback tool acts on the current queue.
+
+After pairing, choose **Copy first prompt** and paste the album request into your MCP chat. Reopening setup checks the saved session.

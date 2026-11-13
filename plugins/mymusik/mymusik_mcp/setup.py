@@ -16,6 +16,35 @@ else:
     import mcp_stdio as bridge
 
 
+FIRST_PROMPT = "List three albums from my MyMusik library."
+PAIRING_SETTINGS_URI = "mymusik://pairing"
+
+
+def saved_connection(profile_path):
+    try:
+        profile = bridge.load_profile(profile_path)
+    except FileNotFoundError:
+        return "new"
+    except (bridge.BridgeError, OSError, ValueError, TypeError, KeyError):
+        return "invalid"
+    try:
+        transport = bridge.Transport(profile["endpoint"], profile["origin"], profile["cookie"], timeout=4)
+        status, _, body = transport.request("GET", "/ui/auth/status")
+        if status != 200:
+            return "unavailable"
+        valid = bridge.json_object(body).get("tokenValid")
+        if valid is False:
+            return "renew"
+        if valid is not True:
+            return "unavailable"
+        bridge.initialize(transport)
+    except bridge.SessionDenied:
+        return "renew"
+    except (bridge.BridgeError, OSError, ValueError, KeyError, TypeError):
+        return "unavailable"
+    return "connected"
+
+
 def invitation_url(text):
     if len(text) > bridge.MAX_MESSAGE:
         raise bridge.BridgeError("The copied text is too long. Copy a fresh MyMusik invitation.")
@@ -42,10 +71,13 @@ def connect(text, profile_path):
 
 def client_config(profile_path):
     executable = Path(sys.executable)
-    if os.name == "nt" and executable.name.lower() == "pythonw.exe":
-        executable = executable.with_name("python.exe")
-    args = [str(Path(__file__).resolve().with_name("cli.py")), "stdio",
-            "--profile", str(Path(profile_path).absolute())]
+    args = ["stdio", "--profile", str(Path(profile_path).absolute())]
+    if getattr(sys, "frozen", False):
+        executable = executable.with_name("mymusik-mcp.exe")
+    else:
+        if os.name == "nt" and executable.name.lower() == "pythonw.exe":
+            executable = executable.with_name("python.exe")
+        args.insert(0, str(Path(__file__).resolve().with_name("cli.py")))
     return {"mcpServers": {"mymusik": {"command": str(executable), "args": args}}}
 
 
@@ -143,77 +175,82 @@ def open_setup(profile_path):
     tk.Label(wordmark, image=mark, bg=header, bd=0).pack(side="left", padx=(0, gap))
     label(wordmark, "MyMusik", header, "white", brand).pack(side="left")
 
-    saved = Path(profile_path).is_file()
     hero = label(banner, "Connect your music player", header, "white", title)
     hero.pack(anchor="w", pady=(gap, 0))
-    subtitle = label(banner, "A pairing profile is saved on this computer." if saved else
-                     "Pair MyMusik with the MCP client on this computer.", header, "#dbd1e5")
+    subtitle = label(banner, "Pair MyMusik with the MCP client on this computer.", header, "#dbd1e5",
+                     wraplength=line_width + inset)
     subtitle.pack(anchor="w", pady=(gap // 2, 0))
 
-    card = tk.Frame(root, bg=surface, padx=inset, pady=inset,
-                    highlightthickness=1, highlightbackground="#ded7e4")
-    card.pack(fill="x", padx=inset, pady=(inset, gap))
-    label(card, "Open Insights", face=heading).pack(anchor="w")
-    label(card, "In MyMusik, open your profile menu and select Insights.", fg=muted,
-          wraplength=line_width).pack(anchor="w", pady=(gap // 2, gap))
-    launch = tk.Frame(card, bg=surface)
-    launch.pack(anchor="w")
+    body = tk.Frame(root, bg=paper, padx=inset, pady=inset)
+    body.pack(fill="x")
 
-    def feedback(message, color="#922f3d"):
-        status.configure(text=message, fg=color)
-        status.pack(anchor="w", fill="x", pady=(gap, 0))
+    def panel():
+        return tk.Frame(body, bg=surface, padx=inset, pady=inset,
+                        highlightthickness=1, highlightbackground="#ded7e4")
 
-    def open_player():
+    pairing, recovery, connected = panel(), panel(), panel()
+
+    def display(panel, heading_text, description):
+        for frame in (pairing, recovery, connected):
+            frame.pack_forget()
+        panel.pack(fill="x", before=manual)
+        hero.configure(text=heading_text)
+        subtitle.configure(text=description)
+
+    def action(parent, title, callback, style="Open.TButton"):
+        return ttk.Button(parent, text=title, command=callback, style=style, cursor="hand2")
+
+    def feedback(message):
+        status.configure(text=message)
+        status.pack(anchor="w", pady=(gap, 0))
+
+    def open_player(uri, error_label):
         try:
             if os.name == "nt":
-                os.startfile("mymusik://open")
-            elif not webbrowser.open("mymusik://open"):
+                os.startfile(uri)
+            elif not webbrowser.open(uri):
                 raise OSError()
         except OSError:
-            feedback("Open MyMusik from your apps, or choose Download MyMusik.")
+            error_label("Open MyMusik from your apps, or download it first.")
 
-    ttk.Button(launch, text="Open MyMusik", style="Open.TButton", command=open_player).pack(side="left")
-    ttk.Button(launch, text="Download MyMusik", style="Link.TButton",
-               command=lambda: webbrowser.open("https://mymusik.app/en/download/")).pack(side="left", padx=gap)
-    tk.Frame(card, bg="#e6dfea", height=1).pack(fill="x", pady=2 * gap)
-    label(card, "Choose QR code permissions", face=heading).pack(anchor="w")
-    label(card, "Find the Connect a device card. Select the shield at the right end of its header, above the QR code.",
+    label(pairing, "Choose your access", face=heading).pack(anchor="w")
+    label(pairing, "Choose a permission preset and session duration in MyMusik, then select Apply.",
           fg=muted, wraplength=line_width).pack(anchor="w", pady=(gap // 2, gap))
-    label(card, "In QR code access, choose a permission preset and session duration, then select Apply.",
-          fg=muted, wraplength=line_width).pack(anchor="w", pady=(gap // 2, gap))
-    label(card, "Pair this computer", face=heading).pack(anchor="w", pady=(gap, 0))
-    label(card, "Below the QR code, select Copy agent prompt (AI agent in the compact view). Then return here.",
+    launch = tk.Frame(pairing, bg=surface)
+    launch.pack(anchor="w")
+    open_button = action(launch, "Open pairing settings", lambda: open_player(PAIRING_SETTINGS_URI, feedback))
+    open_button.pack(side="left")
+    action(launch, "Download MyMusik", lambda: webbrowser.open("https://mymusik.app/en/download/"),
+           "Link.TButton").pack(side="left", padx=gap)
+    manual_path = label(pairing, "Open the profile menu → Insights. On Connect a device, select the shield "
+                        "at the right end of the header, above the QR code.", fg=muted, wraplength=line_width)
+
+    def toggle_path():
+        if manual_path.winfo_manager():
+            manual_path.pack_forget()
+            path_button.configure(text="Can’t find it?")
+        else:
+            manual_path.pack(anchor="w", before=divider, pady=(0, gap))
+            path_button.configure(text="Hide directions")
+
+    path_button = action(pairing, "Can’t find it?", toggle_path, "Link.TButton")
+    path_button.pack(anchor="w")
+    divider = tk.Frame(pairing, bg="#e6dfea", height=1)
+    divider.pack(fill="x", pady=gap)
+    label(pairing, "Pair this computer", face=heading).pack(anchor="w")
+    label(pairing, "Below the QR code, select Copy agent prompt (AI agent in compact view). Then return here.",
           fg=muted, wraplength=line_width).pack(anchor="w", pady=(gap // 2, gap))
     results = queue.Queue()
 
-
-    def pair_in_background(text):
+    def pair_in_background(invitation):
         try:
-            connect(text, profile_path)
+            connect(invitation, profile_path)
         except bridge.BridgeError as error:
-            results.put((False, str(error)))
+            results.put(("pair_error", str(error)))
         except (ValueError, OSError, KeyError, TypeError):
-            results.put((False, "Pairing could not finish. Check the profile location and copy a fresh invitation."))
+            results.put(("pair_error", "Pairing could not finish. Copy a fresh invitation and try again."))
         else:
-            results.put((True, ""))
-
-    def finish_pairing():
-        try:
-            success, message = results.get_nowait()
-        except queue.Empty:
-            root.after(100, finish_pairing)
-            return
-        pair_button.state(["!disabled"])
-        pair_button.configure(text="Paste invitation and pair")
-        if success:
-            hero.configure(text="Your player is connected")
-            subtitle.configure(text="Reconnect MyMusik in your MCP client, then ask it to list three albums.")
-            config_button.configure(style="Next.TButton")
-            card.pack_forget()
-            renew_button.pack(side="left", padx=gap)
-            config_button.focus_set()
-        else:
-            feedback(message)
+            results.put(("connected", ""))
 
     def paste_and_pair():
         try:
@@ -225,49 +262,108 @@ def open_setup(profile_path):
             feedback(str(error))
             return
         pair_button.state(["disabled"])
-        feedback("Connecting to MyMusik…", muted)
         pair_button.configure(text="Pairing…")
+        status.pack_forget()
         threading.Thread(target=pair_in_background, args=(invitation,), daemon=True).start()
-        root.after(100, finish_pairing)
+        root.after(80, finish)
 
-    pair_button = ttk.Button(card, text="Paste invitation and pair", style="Pair.TButton", command=paste_and_pair)
-    pair_button.pack(anchor="w", pady=(gap // 2, 0))
-    status = label(card, "", wraplength=line_width)
-
-    client = tk.Frame(root, bg=paper, padx=inset)
-    client.pack(fill="x", pady=(gap, inset))
-    label(client, "Client settings", paper, ink, heading).pack(anchor="w")
-    client_hint = label(client, "Using a JSON configuration? Copy the MyMusik entry into mcpServers.",
-                        paper, muted, wraplength=line_width)
-    client_hint.pack(anchor="w", pady=(gap // 2, gap))
-
-    def copy_config():
-        try:
-            root.clipboard_clear()
-            root.clipboard_append(json.dumps(client_config(profile_path), indent=2))
-        except tk.TclError:
-            client_hint.configure(text="Clipboard unavailable. Run mymusik-mcp config to get the settings.")
-        else:
-            client_hint.configure(text="Configuration copied. Add the entry alongside your existing servers.")
+    pair_button = action(pairing, "Paste invitation and pair", paste_and_pair, "Pair.TButton")
+    pair_button.pack(anchor="w")
+    status = label(pairing, "", fg="#922f3d", wraplength=line_width)
 
     def show_pairing():
-        card.pack(before=client, fill="x", padx=inset, pady=(inset, gap))
-        renew_button.pack_forget()
         status.pack_forget()
-        hero.configure(text="Pair this computer again")
-        subtitle.configure(text="Copy a fresh invitation to renew or change access.")
-        config_button.configure(style="Plain.TButton")
-        pair_button.focus_set()
+        display(pairing, "Connect your music player", "Pair MyMusik with the MCP client on this computer.")
+        open_button.focus_set()
 
-    client_actions = tk.Frame(client, bg=paper)
-    client_actions.pack(anchor="w")
-    config_button = ttk.Button(client_actions, text="Copy client configuration", command=copy_config,
-                               style="Plain.TButton")
-    config_button.pack(side="left")
-    renew_button = ttk.Button(client_actions, text="Pair again", command=show_pairing, style="Plain.TButton")
-    subtitle.configure(wraplength=line_width + inset)
-    pair_button.focus_set()
+    def probe():
+        results.put((saved_connection(profile_path), ""))
+
+    def check():
+        display(recovery, "Checking your connection", "Contacting the player using your saved session…")
+        recovery_hint.configure(text="Keep MyMusik open while setup checks.")
+        recovery_actions.pack_forget()
+        threading.Thread(target=probe, daemon=True).start()
+        root.after(80, finish)
+
+    recovery_hint = label(recovery, "", wraplength=line_width)
+    recovery_hint.pack(anchor="w")
+    recovery_actions = tk.Frame(recovery, bg=surface)
+    retry = action(recovery_actions, "Retry", check, "Pair.TButton")
+    retry.pack(side="left")
+    action(recovery_actions, "Open MyMusik", lambda: open_player("mymusik://open",
+           lambda msg: recovery_hint.configure(text=msg))).pack(side="left", padx=gap)
+    action(recovery_actions, "Pair again", show_pairing, "Link.TButton").pack(side="left")
+
+    label(connected, "Try it in your MCP client", face=heading).pack(anchor="w")
+    prompt_hint = label(connected, FIRST_PROMPT, wraplength=line_width)
+    prompt_hint.pack(anchor="w", pady=gap)
+    connected_actions = tk.Frame(connected, bg=surface)
+    connected_actions.pack(anchor="w")
+
+    def copy(text, hint, success):
+        try:
+            root.clipboard_clear()
+            root.clipboard_append(text)
+        except tk.TclError:
+            hint.configure(text="Clipboard unavailable. " + (FIRST_PROMPT if hint == prompt_hint
+                           else "Run mymusik-mcp config to get the settings."))
+        else:
+            hint.configure(text=success)
+
+    first = action(connected_actions, "Copy first prompt", lambda: copy(FIRST_PROMPT, prompt_hint,
+                   "Copied. Paste it into your MCP chat."), "Pair.TButton")
+    first.pack(side="left")
+    action(connected_actions, "Pair again", show_pairing, "Link.TButton").pack(side="left", padx=gap)
+
+    def finish():
+        try:
+            state, message = results.get_nowait()
+        except queue.Empty:
+            root.after(80, finish)
+            return
+        pair_button.state(["!disabled"])
+        pair_button.configure(text="Paste invitation and pair")
+        if state == "connected":
+            display(connected, "Your player is connected", "Open your MCP client or reconnect its MyMusik extension.")
+            prompt_hint.configure(text=FIRST_PROMPT)
+            first.focus_set()
+        elif state == "unavailable":
+            display(recovery, "Can’t reach your player", "Your saved session is still on this computer.")
+            recovery_hint.configure(text="Open MyMusik on the paired device, check the network, then retry.")
+            recovery_actions.pack(anchor="w", pady=(gap, 0))
+            retry.focus_set()
+        elif state == "pair_error":
+            feedback(message)
+        else:
+            show_pairing()
+            if state == "renew":
+                subtitle.configure(text="Your saved access expired or was denied. Copy a new invitation to reconnect.")
+            elif state == "invalid":
+                subtitle.configure(text="Setup couldn’t read your saved session. Pair again to replace it.")
+
+    manual = tk.Frame(body, bg=paper)
+    manual.pack(fill="x", pady=(gap, 0))
+    settings = tk.Frame(manual, bg=paper)
+
+    def toggle_config():
+        if settings.winfo_manager():
+            settings.pack_forget()
+        else:
+            settings.pack(fill="x", pady=(gap, 0))
+
+    action(manual, "Manual client setup", toggle_config, "Plain.TButton").pack(anchor="w")
+    config_hint = label(settings, "For JSON clients, add the MyMusik entry to mcpServers.",
+                        paper, muted, wraplength=line_width)
+    config_hint.pack(anchor="w", pady=(0, gap))
+    action(settings, "Copy client configuration", lambda: copy(json.dumps(client_config(profile_path), indent=2),
+           config_hint, "Configuration copied. Add the entry alongside your existing servers."),
+           "Plain.TButton").pack(anchor="w")
+
+    show_pairing()
     root.update_idletasks()
     root.minsize(root.winfo_reqwidth(), 1)
     root.resizable(True, False)
+    if Path(profile_path).exists():
+        check()
     root.mainloop()

@@ -1,10 +1,12 @@
 """First-run behavior for clipboard pairing and generated MCP launch settings."""
 
 import json
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from threading import Thread
 import unittest
 from unittest.mock import patch
 
@@ -12,6 +14,55 @@ from mymusik_mcp import mcp_stdio as bridge, setup
 
 
 class SetupTest(unittest.TestCase):
+    def test_saved_session_is_checked_without_redeeming_an_invitation(self):
+        requests = []
+
+        class Player(BaseHTTPRequestHandler):
+            def log_message(self, *args):
+                pass
+
+            def respond(self, body):
+                self.send_response(self.server.status)
+                self.end_headers()
+                self.wfile.write(json.dumps(body).encode())
+
+            def do_GET(self):
+                requests.append((self.path, self.headers.get("Cookie")))
+                self.respond({"tokenValid": self.server.valid})
+
+            def do_POST(self):
+                message = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+                requests.append((self.path, message["method"]))
+                self.respond({"id": 1, "jsonrpc": "2.0", "result": {
+                    "protocolVersion": bridge.VERSION, "serverInfo": {"name": "MyMusik"}}})
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "connection.profile"
+            self.assertEqual(setup.saved_connection(path), "new")
+            path.write_bytes(b"invalid")
+            self.assertEqual(setup.saved_connection(path), "invalid")
+            with HTTPServer(("127.0.0.1", 0), Player) as server:
+                origin = "http://127.0.0.1:" + str(server.server_port)
+                bridge.save_profile(path, {"version": 1, "origin": origin, "endpoint": origin, "cookie": "test=local"})
+                before = path.read_bytes()
+                server.status, server.valid = 200, True
+                thread = Thread(target=server.serve_forever, daemon=True)
+                thread.start()
+                try:
+                    self.assertEqual(setup.saved_connection(path), "connected")
+                    self.assertEqual(requests, [("/ui/auth/status", "test=local"), ("/mcp", "initialize")])
+                    server.valid = False
+                    self.assertEqual(setup.saved_connection(path), "renew")
+                    server.status = 403
+                    self.assertEqual(setup.saved_connection(path), "renew")
+                    server.status = 503
+                    self.assertEqual(setup.saved_connection(path), "unavailable")
+                finally:
+                    server.shutdown()
+                    thread.join()
+            self.assertEqual(setup.saved_connection(path), "unavailable")
+            self.assertEqual(path.read_bytes(), before)
+
     def test_agent_prompt_redeems_only_the_invitation(self):
         url = "http://localhost:7790/ui/auth#grant=example&return=%2Fui"
         prompt = "\r\n".join(["Connection details", "MCP endpoint: http://localhost:7790/mcp",

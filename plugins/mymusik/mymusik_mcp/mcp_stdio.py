@@ -46,6 +46,10 @@ class BridgeError(Exception):
     """Only fixed, credential-free messages are exposed to the caller."""
 
 
+class SessionDenied(BridgeError):
+    """The player rejected the current session or its permissions."""
+
+
 def encode(value):
     return json.dumps(value, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8")
 
@@ -192,7 +196,7 @@ class Transport:
             if 300 <= response.status < 400:
                 raise BridgeError("Redirect refused. Confirm the app endpoint and pair again.")
             if response.status in (401, 403):
-                raise BridgeError("Session expired or access denied. Check the selected grants or pair with a fresh AI prompt.")
+                raise SessionDenied("Session expired or access denied. Check the selected grants or pair with a fresh AI prompt.")
             return response.status, response.getheaders(), data
         except (OSError, http.client.HTTPException, ssl.SSLError):
             raise BridgeError("Connection failed or timed out. Outcome may be unknown; do not automatically repeat a write.") from None
@@ -363,13 +367,17 @@ def pair(invitation, endpoint=None):
     status, _, body = transport.request("GET", "/ui/auth/status")
     if status != 200 or json_object(body).get("tokenValid") is not True:
         raise BridgeError("App did not verify the paired session.")
+    return {"version": 1, "endpoint": endpoint or origin, "origin": origin, "cookie": transport.cookie}, initialize(transport)
+
+
+def initialize(transport):
     hello = transport.rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize",
                            "params": {"protocolVersion": VERSION, "capabilities": {},
                                       "clientInfo": {"name": "framework-connector", "version": "1"}}})
     result = hello.get("result")
     if "error" in hello or not isinstance(result, dict) or not isinstance(result.get("serverInfo"), dict):
         raise BridgeError("App session is valid but MCP initialization failed.")
-    return {"version": 1, "endpoint": endpoint or origin, "origin": origin, "cookie": transport.cookie}, hello["result"]
+    return result
 
 
 def serve(profile, source=None, output=None, timeout=DEFAULT_TIMEOUT, *, transport_factory=Transport):

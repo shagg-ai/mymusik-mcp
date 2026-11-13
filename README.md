@@ -42,13 +42,14 @@ To switch access on an existing connection, apply the new permissions in MyMusik
 
 ## Pair and find your first albums
 
-**Guided setup from this checkout** (Python 3.10+ with Tk). On Windows, extract the repository ZIP into a folder you intend to keep and double-click **MyMusik Setup.pyw**. From a terminal on any desktop, run `python plugins/mymusik/mymusik_mcp/cli.py setup` in that folder. If you installed the connector from this checkout, run `mymusik-mcp setup`.
+**Windows guided setup.** Run **MyMusik-MCP-Setup-x64.exe** when supplied with your build. It installs the connector and its Python/Tk runtime for your Windows account. Open **MyMusik MCP Setup** from Start to check or change the connection later.
 
-1. Choose **Open MyMusik** or **Download MyMusik**. Add an album and leave the player open.
-2. Open the **profile menu → Insights**. On the **Connect a device** card, select the shield at the right end of the header, above the QR code. In **QR code access**, choose a permission preset and session duration. Select **Apply**, then **Copy agent prompt** below the QR code (**AI agent** in the compact view).
-3. In setup, choose **Paste invitation and pair**. The window checks the connection and saves the session under your operating-system account.
-4. Reconnect the MyMusik plugin in your MCP client. For a client configured with JSON, choose **Copy client configuration** and add its `mymusik` entry to your client's `mcpServers`. The paths point to this connector installation.
-5. Ask **“List three albums from my MyMusik library.”** Compare the titles with the Albums screen.
+1. Choose **Open pairing settings**. On a desktop player that supports the pairing link, this opens **QR code access**. For an older player or a player on another device, use **Can’t find it?** Open the player’s **profile menu → Insights**, then select the shield in the **Connect a device** header.
+2. Choose a permission preset and session duration, select **Apply**, then **Copy agent prompt** under the QR code (**AI agent** in compact view). Return to setup and select **Paste invitation and pair**.
+3. Reconnect MyMusik in your MCP client. Choose **Copy first prompt** and paste it into the chat. If your client requires JSON, expand **Manual client setup** and add the copied MyMusik entry to its existing configuration.
+4. Next time, setup checks your saved session. If the player is offline, open it and select **Retry**. If access expired, copy a fresh invitation.
+
+**From source** (Python 3.10+ with Tk), run `python plugins/mymusik/mymusik_mcp/cli.py setup` or double-click **MyMusik Setup.pyw** in the extracted checkout. Keep the checkout in place if using its JSON configuration.
 
 **Terminal pairing with the released wheel**
 
