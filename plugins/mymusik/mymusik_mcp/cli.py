@@ -9,9 +9,11 @@ import sys
 
 if __package__:
     from . import mcp_stdio as bridge
+    from . import setup
     from .playback import MyMusikTransport, UnpairedMyMusik
 else:  # Plugin hosts run this file with their own Python interpreter.
     import mcp_stdio as bridge
+    import setup
     from playback import MyMusikTransport, UnpairedMyMusik
 
 
@@ -25,18 +27,23 @@ def default_profile():
 
 def main():
     parser = argparse.ArgumentParser(prog="mymusik-mcp", description=__doc__)
-    parser.add_argument("command", nargs="?", choices=("pair", "stdio"), default="stdio")
+    parser.add_argument("command", nargs="?", choices=("setup", "pair", "config", "stdio"),
+                        help="Open graphical setup, pair in a terminal, print client settings, or serve MCP.")
     parser.add_argument("--profile", type=Path, default=default_profile(),
                         help="Profile to save or use (default: per-user MyMusik profile)")
     parser.add_argument("--request-timeout", type=bridge.request_timeout,
                         default=bridge.DEFAULT_TIMEOUT, help="HTTP timeout in seconds (1 to 3600)")
     try:
         args = parser.parse_args()
-        if args.command == "pair":
+        command = args.command or ("setup" if sys.stdin.isatty() and sys.stdout.isatty() else "stdio")
+        if command == "setup":
+            setup.open_setup(args.profile)
+        elif command == "config":
+            print(json.dumps(setup.client_config(args.profile), indent=2))
+        elif command == "pair":
             invitation = (getpass.getpass("MyMusik invitation URL (hidden): ")
                           if sys.stdin.isatty() else sys.stdin.readline(bridge.MAX_MESSAGE))
-            profile, hello = bridge.pair(invitation)
-            bridge.save_profile(args.profile, profile)
+            hello = setup.connect(invitation, args.profile)
             print(json.dumps({"connected": True, "serverInfo": hello["serverInfo"]}))
         else:
             try:
@@ -45,10 +52,17 @@ def main():
                 bridge.serve_transport(UnpairedMyMusik())
             else:
                 bridge.serve(profile, timeout=args.request_timeout, transport_factory=MyMusikTransport)
-    except (bridge.BridgeError, OSError, ValueError, KeyError, TypeError):
+    except bridge.BridgeError as error:
+        print(str(error), file=sys.stderr)
+        return 1
+    except (OSError, ValueError, KeyError, TypeError, EOFError):
         print("MyMusik connection failed. Check that MyMusik is running and pair with a fresh invitation using mymusik-mcp pair.", file=sys.stderr)
         return 1
     return 0
+
+
+def desktop_setup():
+    setup.open_setup(default_profile())
 
 
 if __name__ == "__main__":

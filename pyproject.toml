@@ -19,6 +19,9 @@ Repository = "https://github.com/shagg-ai/mymusik-mcp"
 [project.scripts]
 mymusik-mcp = "mymusik_mcp.cli:main"
 
+[project.gui-scripts]
+mymusik-setup = "mymusik_mcp.cli:desktop_setup"
+
 [tool.setuptools]
 packages = ["mymusik_mcp"]
 package-dir = { mymusik_mcp = "plugins/mymusik/mymusik_mcp" }
